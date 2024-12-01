@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOTEL DAVINA - Keluhan Pelanggan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .confirmation-section {
+            display: none;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .confirmation-body {
+            padding: 20px;
+            border: 1px solid #dcdcdc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .icon-circle {
+            font-size: 50px;
+            color: green;
+            margin-bottom: 10px;
+        }
+        #roomDetailsSection {
+            display: none;
+        }
+        #roomNumberSection {
+            display: none;  /* Hide room number section by default */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="home.html">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="bedroom.html">BedRoom</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="resto.html">Resto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cafe.html">Cafe</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="karaoke.html">Karaoke</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="meetingroom.html">Meeting Room</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Keluhan.html">Keluhan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pesanan.html">Pesanan</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Form Keluhan Pelanggan -->
+    <div class="container mt-5 pt-5">
+        <h2 class="text-center mb-4">Keluhan Pelanggan</h2>
+        <form id="keluhanForm" onsubmit="return saveKeluhan(event)">
+            <div class="row mb-3">
+                <label for="tanggal" class="col-sm-3 col-form-label">Hari/Tanggal</label>
+                <div class="col-sm-9">
+                    <input type="date" class="form-control" id="tanggal" name="tanggal">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nama" class="col-sm-3 col-form-label">Nama</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="email" class="col-sm-3 col-form-label">Email</label>
+                <div class="col-sm-9">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keluhan" class="col-sm-3 col-form-label">Keluhan</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" id="keluhan" name="keluhan" rows="4" placeholder="Masukkan keluhan Anda"></textarea>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="status" class="col-sm-3 col-form-label">Masalah</label>
+                <div class="col-sm-9">
+                    <select class="form-select" id="status" name="status" onchange="toggleRoomDetailsField()">
+                        <option value="pilih masalah">pilih jenis</option>
+                        <option value="BedRoom">BedRoom</option>
+                        <option value="Cafe">Cafe</option>
+                        <option value="Meeting Room">Meeting Room</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Room Details Section (conditionally displayed) -->
+            <div class="row mb-3" id="roomDetailsSection">
+                <label for="roomType" class="col-sm-3 col-form-label">Tipe Kamar</label>
+                <div class="col-sm-9">
+                    <select class="form-select" id="roomType" name="roomType">
+                        <option value="Single">Deluxe</option>
+                        <option value="Double">Superior</option>
+                        <option value="Suite">Standar</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Room Number Section (conditionally displayed) -->
+            <div class="row mb-3" id="roomNumberSection">
+                <label for="roomNumber" class="col-sm-3 col-form-label">Nomor Kamar</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="roomNumber" name="roomNumber" placeholder="Masukkan nomor kamar">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" onclick="goBack()">Back</button>
+                <button type="submit" class="btn btn-success">Kirim Keluhan</button>
+            </div>
+        </form>
+
+        <!-- Confirmation Section -->
+        <div class="confirmation-section" id="confirmationSection">
+            <div class="confirmation-body">
+                <div class="icon-circle">
+                    <i class="bi bi-check-circle"></i> <!-- Bootstrap icon for success -->
+                </div>
+                <h3>Keluhan Berhasil Dikirim!</h3>
+                <p>Terima kasih atas keluhan Anda, kami akan segera menindaklanjuti masalah Anda.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to toggle room details input field based on selected status
+        function toggleRoomDetailsField() {
+            let status = document.getElementById('status').value;
+            let roomDetailsSection = document.getElementById('roomDetailsSection');
+            let roomNumberSection = document.getElementById('roomNumberSection');
+
+            // Show the room details section and room number only if "BedRoom" is selected
+            if (status === "BedRoom") {
+                roomDetailsSection.style.display = 'block';  // Show room type field
+                roomNumberSection.style.display = 'block';  // Show room number field
+            } else {
+                roomDetailsSection.style.display = 'none';   // Hide room type field
+                roomNumberSection.style.display = 'none';   // Hide room number field
+            }
+        }
+
+        // Function to go back to the previous page
+        function goBack() {
+            window.location.href = "home.html"; // Ganti dengan URL halaman yang sesuai
+        }
+
+        // Function to save the complaint
+        function saveKeluhan(event) {
+            // Prevent form from actually submitting
+            event.preventDefault();
+
+            // Get form values
+            let tanggal = document.getElementById('tanggal').value;
+            let nama = document.getElementById('nama').value;
+            let email = document.getElementById('email').value;
+            let keluhan = document.getElementById('keluhan').value;
+            let status = document.getElementById('status').value;
+            let roomType = status === "BedRoom" ? document.getElementById('roomType').value : null;
+            let roomNumber = status === "BedRoom" ? document.getElementById('roomNumber').value : null;
+
+            // Validate room type and room number if the complaint is related to "BedRoom"
+            if (status === "BedRoom" && (!roomType || !roomNumber)) {
+                alert("Mohon masukkan tipe kamar dan nomor kamar.");
+                return false;
+            }
+
+            // Store the complaint in localStorage
+            let complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+            complaints.push({ tanggal, nama, email, keluhan, status, roomType, roomNumber });
+            localStorage.setItem('complaints', JSON.stringify(complaints));
+
+            // Show confirmation message
+            document.getElementById('confirmationSection').style.display = 'block';
+
+            // Hide form after submission (optional)
+            document.getElementById('keluhanForm').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

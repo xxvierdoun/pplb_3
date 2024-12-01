@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOTEL DAVINA - Pemesanan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 80px;
+            background-color: #f8f9fa;
+        }
+        .room-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .room-card {
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        .room-card:hover {
+            transform: scale(1.05);
+        }
+        .modal-header {
+            background-color: #dc3545;
+            color: white;
+        }
+        /* Tambahkan z-index yang tinggi agar toast muncul di depan */
+        .toast-container {
+            z-index: 1055; /* Lebih tinggi dari modal dan elemen lainnya */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="home.html">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="bedroom.html">BedRoom</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="resto.html">Resto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cafe.html">Cafe</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="karaoke.html">Karaoke</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="meetingroom.html">Meeting Room</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Keluhan.html">Keluhan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pesanan.html">Pesanan</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Form Pemesanan -->
+    <div class="container mt-4">
+        <h3>Pilih Kamar</h3>
+        <form id="bookingForm">
+            <div class="mb-3">
+                <label for="roomType" class="form-label">Pilih Tipe Kamar</label>
+                <select id="roomType" class="form-select" required onchange="showAvailableRooms()">
+                    <option value="">Pilih Tipe Kamar</option>
+                    <option value="deluxe">Deluxe</option>
+                    <option value="superior">Superior</option>
+                    <option value="standard">Standard</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="checkInDate" class="form-label">Tanggal Check-In</label>
+                <input type="date" id="checkInDate" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="checkOutDate" class="form-label">Tanggal Check-Out</label>
+                <input type="date" id="checkOutDate" class="form-control" required>
+            </div>
+            <button type="button" class="btn btn-danger w-100" onclick="showAvailableRooms()">Tampilkan Kamar</button>
+        </form>
+
+        <div class="row mt-4" id="roomCards"></div>
+    </div>
+
+    <!-- Modal Pemesanan -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">Form Pemesanan Kamar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="modalBookingForm">
+                        <div class="mb-3">
+                            <label for="selectedRoom" class="form-label">Kamar</label>
+                            <input type="text" id="selectedRoom" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="roomPrice" class="form-label">Harga</label>
+                            <input type="text" id="roomPrice" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="checkInDateModal" class="form-label">Tanggal Check-In</label>
+                            <input type="date" id="checkInDateModal" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="checkOutDateModal" class="form-label">Tanggal Check-Out</label>
+                            <input type="date" id="checkOutDateModal" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="guestName" class="form-label">Nama Tamu</label>
+                            <input type="text" id="guestName" class="form-control" placeholder="Masukkan Nama Tamu" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="guestContact" class="form-label">Kontak</label>
+                            <input type="text" id="guestContact" class="form-control" placeholder="Masukkan Nomor HP atau Email" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100">Pesan Sekarang</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Pemesanan berhasil! Terima kasih telah memesan.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data kamar
+        const roomData = {
+    deluxe: [
+        { name: "Deluxe Room 101", roomNumber: "101", price: 360000, image: "kamar1.jpg" },
+        { name: "Deluxe Room 102", roomNumber: "102", price: 360000, image: "kamar1.jpg" }
+    ],
+    superior: [
+        { name: "Superior Room 201", roomNumber: "201", price: 400000, image: "kamar2.jpg" },
+        { name: "Superior Room 202", roomNumber: "202", price: 400000, image: "kamar2.jpg" }
+    ],
+    standard: [
+        { name: "Standard Room 301", roomNumber: "301", price: 250000, image: "kamar3.png" },
+        { name: "Standard Room 302", roomNumber: "302", price: 250000, image: "kamar3.png" }
+    ]
+};
+
+function showAvailableRooms() {
+    const roomType = document.getElementById("roomType").value;
+    const checkInDate = document.getElementById("checkInDate").value;
+    const checkOutDate = document.getElementById("checkOutDate").value;
+    const roomCardsContainer = document.getElementById("roomCards");
+
+    if (!roomType || !checkInDate || !checkOutDate) {
+        alert("Silakan lengkapi semua informasi.");
+        return;
+    }
+
+    roomCardsContainer.innerHTML = ""; // Reset room cards
+
+    roomData[roomType].forEach(room => {
+        const card = document.createElement("div");
+        card.classList.add("col-md-4", "mb-4");
+        card.innerHTML = `
+            <div class="card room-card shadow" onclick="openBookingModal('${room.name}', '${room.roomNumber}', ${room.price}, '${checkInDate}', '${checkOutDate}')">
+                <img src="${room.image}" class="card-img-top" alt="Room Image">
+                <div class="card-body">
+                    <h5 class="card-title">${room.name}</h5>
+                    <p class="card-text">Rp ${room.price.toLocaleString()}</p>
+                </div>
+            </div>
+        `;
+        roomCardsContainer.appendChild(card);
+    });
+}
+
+function openBookingModal(roomName, roomNumber, roomPrice, checkInDate, checkOutDate) {
+    document.getElementById("selectedRoom").value = `${roomName} (No: ${roomNumber})`;
+    document.getElementById("roomPrice").value = "Rp " + roomPrice;
+    document.getElementById("checkInDateModal").value = checkInDate;
+    document.getElementById("checkOutDateModal").value = checkOutDate;
+
+    const bookingModal = new bootstrap.Modal(document.getElementById("bookingModal"));
+    bookingModal.show();
+}
+
+document.getElementById("modalBookingForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const guestName = document.getElementById("guestName").value;
+    const guestContact = document.getElementById("guestContact").value;
+    const roomName = document.getElementById("selectedRoom").value;
+    const roomPrice = document.getElementById("roomPrice").value;
+    const checkInDate = document.getElementById("checkInDateModal").value;
+    const checkOutDate = document.getElementById("checkOutDateModal").value;
+    const roomNumber = roomName.match(/\(No: (\d+)\)/)?.[1]; // Ekstrak nomor kamar dari nama kamar
+
+    if (guestName && guestContact) {
+        const roomOrder = {
+            name: roomName,
+            roomNumber: roomNumber, // Tambahkan nomor kamar
+            price: roomPrice,
+            checkIn: checkInDate,
+            checkOut: checkOutDate,
+            guestName: guestName,
+            guestContact: guestContact,
+            status: 'Pending',
+        };
+
+        let roomOrders = JSON.parse(localStorage.getItem('roomOrders')) || [];
+        roomOrders.push(roomOrder);
+        localStorage.setItem('roomOrders', JSON.stringify(roomOrders));
+
+        const successToast = new bootstrap.Toast(document.getElementById("successToast"));
+        successToast.show();
+
+        this.reset();
+        const bookingModal = bootstrap.Modal.getInstance(document.getElementById("bookingModal"));
+        bookingModal.hide();
+    } else {
+        alert("Silakan lengkapi nama dan kontak.");
+    }
+});
+
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

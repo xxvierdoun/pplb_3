@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOTEL DAVINA - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="navbar">
+        <h1>LOG-IN</h1>
+    </div>
+    <div class="login-container">
+        <form action="halaman_admin.html" method="GET" class="login-form">
+            <div class="form-group">
+                <label for="username">Masukkan username</label>
+                <input type="text" id="username" name="username" placeholder="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Masukkan Password</label>
+                <input type="password" id="password" placeholder="********" required>
+                <div class="additional-links d-flex justify-content-end">
+                    <a href="lupasandi.html">Lupa kata sandi?</a>
+                </div>
+            </div>
+            <div class="btn-center">
+                <button type="submit" class="btn-login">Masuk</button>
+            </div>
+        </form>
+        <p class="signin-link">
+            Belum punya akun? <a href="sign-up.html">Daftar</a> atau daftar dengan:
+        </p>
+        <div class="social-icons">
+            <a href="#"><img src="google.png" alt="Google"></a>
+            <a href="#"><img src="fecebook.png" alt="Facebook"></a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOTEL DAVINA - Cafe Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 80px;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .menu-item {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .menu-item img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .menu-item h5 {
+            margin-top: 10px;
+        }
+        .menu-item p {
+            font-size: 16px;
+            color: #888;
+        }
+        .order-container {
+            margin-top: 30px;
+        }
+        .order-container h4 {
+            margin-bottom: 20px;
+        }
+        .order-list {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+            gap: 10px; /* Membuat jarak antar item */
+        }
+        .order-list li {
+            list-style: none;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            flex: 1 1 200px; /* Menyusun item agar responsif */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .order-list button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .order-list button:hover {
+            background-color: #c82333;
+        }
+        .total-cost {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .action-buttons {
+            margin-top: 20px;
+        }
+        .action-buttons button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+        .action-buttons .btn-cancel {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .action-buttons .btn-proceed {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="home.html">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="bedroom.html">BedRoom</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="resto.html">Resto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cafe.html">Cafe</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="karaoke.html">Karaoke</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="meetingroom.html">Meeting Room</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Keluhan.html">Keluhan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pesanan.html">Pesanan</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Menu Items -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 menu-item">
+                <img src="caffe.jpeg" alt="Coffee">
+                <h5>Coffee</h5>
+                <p>Rp 25,000</p>
+                <button class="btn btn-danger" onclick="addToOrder('Coffee', 25000, 'caffe.jpeg')">Add to Order</button>
+            </div>
+            <div class="col-md-4 menu-item">
+                <img src="tae.jpeg" alt="Tea">
+                <h5>Tea</h5>
+                <p>Rp 15,000</p>
+                <button class="btn btn-danger" onclick="addToOrder('Tea', 15000, 'tae.jpeg')">Add to Order</button>
+            </div>
+            <div class="col-md-4 menu-item">
+                <img src="cake.jpeg" alt="Cake">
+                <h5>Cake</h5>
+                <p>Rp 30,000</p>
+                <button class="btn btn-danger" onclick="addToOrder('Cake', 30000, 'cake.jpeg')">Add to Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Section -->
+    <div class="container order-container">
+        <h4>Pesanan Anda</h4>
+        <ul class="order-list" id="orderList"></ul>
+        <div class="total-cost" id="totalCost">Total: Rp 0</div>
+        <div class="action-buttons">
+            <button class="btn-cancel btn" onclick="cancelOrder()">Batalkan</button>
+            <button class="btn-proceed btn" onclick="proceedOrder()">Pesan Sekarang</button>
+        </div>
+    </div>
+
+    <script>
+        let order = [];
+
+        // Add item to the order
+        function addToOrder(name, price, image) {
+            order.push({ name, price, image });
+            renderOrder();
+        }
+
+        // Render the order list
+        function renderOrder() {
+            const orderList = document.getElementById("orderList");
+            orderList.innerHTML = ''; // Clear the list first
+            let total = 0;
+
+            order.forEach((item, index) => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `${item.name} - Rp ${item.price.toLocaleString()} 
+                    <button onclick="removeFromOrder(${index})">Hapus</button>`;
+                orderList.appendChild(listItem);
+                total += item.price;
+            });
+
+            document.getElementById("totalCost").innerHTML = `Total: Rp ${total.toLocaleString()}`;
+        }
+
+        // Remove item from the order list
+        function removeFromOrder(index) {
+            order.splice(index, 1);
+            renderOrder();
+        }
+
+        // Cancel the order
+        function cancelOrder() {
+            order = [];
+            renderOrder();
+        }
+
+        // Proceed to checkout
+        function proceedOrder() {
+            if (order.length === 0) {
+                alert("Silakan pilih menu terlebih dahulu.");
+                return;
+            }
+
+            // Save order to localStorage
+            const existingOrders = JSON.parse(localStorage.getItem('cafeOrders')) || [];
+            existingOrders.push(...order);
+            localStorage.setItem('cafeOrders', JSON.stringify(existingOrders));
+
+            // Redirect ke halaman konfirmasi pesanan
+            window.location.href = 'konfirmasi_pesanan.html'; // Arahkan ke halaman baru
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

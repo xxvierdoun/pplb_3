@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOTEL DAVINA - Manajemen dan Rekap Laporan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin-top: 80px;
+        }
+
+        .main-title {
+            margin-bottom: 20px;
+            border-bottom: 3px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .summary-table,
+        .table-bordered {
+            border: 3px solid #333;
+        }
+
+        .summary-table th,
+        .summary-table td,
+        .table-bordered th,
+        .table-bordered td {
+            text-align: center;
+            border: 3px solid #333;
+            padding: 12px;
+        }
+
+        .summary-table th,
+        .table th {
+            background-color: #f1f1f1;
+        }
+
+        .btn-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .container, .container * {
+                visibility: visible;
+            }
+
+            .btn-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="halaman_karyawan.html">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="laporan_karyawan.html">Laporan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Status_pesanan.html">Konfirmasi Pesanan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="rekap_keluhan.html">Keluhan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manajemen.html">Manajemen</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5 pt-5">
+        <h2 class="text-center main-title">Manajemen dan Rekap Laporan</h2>
+
+        <!-- Rekap Laporan -->
+        <h4>Rekap Laporan Penjualan</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Hari</th>
+                    <th>Jumlah Pesanan</th>
+                    <th>Jumlah Pelanggan</th>
+                    <th>Jenis Pesanan</th>
+                    <th>Catatan</th>
+                    <th>Tanggal Pemesanan</th> <!-- Add date column -->
+                </tr>
+            </thead>
+            <tbody id="laporanRekap"></tbody>
+        </table>
+
+        <!-- Manajemen Pemesanan -->
+        <h4>Rincian Pemesanan Kamar</h4>
+        <table class="table summary-table">
+            <thead>
+                <tr>
+                    <th>Jenis Kamar</th>
+                    <th>Nomor Kamar</th>
+                    <th>Status Kamar</th>
+                </tr>
+            </thead>
+            <tbody id="roomSummaryTable"></tbody>
+        </table>
+    </div>
+
+    <!-- Buttons -->
+    <div class="btn-container">
+        <button class="btn btn-primary" id="btnSavePDF">Simpan PDF</button>
+        <button class="btn btn-secondary" onclick="window.print()">Cetak Laporan</button>
+    </div>
+
+    <!-- Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            integrateDates();
+        });
+
+        function integrateDates() {
+            const roomOrders = JSON.parse(localStorage.getItem('roomOrders')) || [];
+            const roomSummaryTable = document.getElementById('roomSummaryTable');
+            const dummyData = [
+                { name: "Deluxe Room", roomNumber: "101", status: "Kosong" },
+                { name: "Superior Room", roomNumber: "102", status: "Kosong" },
+                { name: "Standard Room", roomNumber: "103", status: "Kosong" }
+            ];
+
+            dummyData.forEach(room => {
+                const order = roomOrders.find(o => o.roomNumber === room.roomNumber && o.status === 'Diterima');
+                roomSummaryTable.innerHTML += `
+                    <tr>
+                        <td>${room.name}</td>
+                        <td>${room.roomNumber}</td>
+                        <td>${order ? 'Terisi' : 'Kosong'}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Function to format the date as DD-MM-YYYY
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        window.onload = function () {
+            const laporanData = JSON.parse(localStorage.getItem("laporanData")) || [];
+            const laporanRekap = document.getElementById("laporanRekap");
+
+            // Fill in the laporan table with data
+            laporanData.forEach((laporan) => {
+                const row = `
+                    <tr>
+                        <td>${laporan.hari}</td>
+                        <td>${laporan.jumlahPesanan}</td>
+                        <td>${laporan.jumlahPelanggan}</td>
+                        <td>${laporan.jenisPesanan}</td>
+                        <td>${laporan.catatan}</td>
+                        <td>${formatDate(new Date())}</td> <!-- Add the formatted date -->
+                    </tr>
+                `;
+                laporanRekap.innerHTML += row;
+            });
+
+            calculateSummaries();
+        };
+
+        // Function to save the report as a PDF
+        document.getElementById("btnSavePDF").addEventListener("click", async function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text("Rekap Laporan Penjualan", 105, 20, { align: "center" });
+
+            const laporanTable = document.querySelector(".container");
+
+            await doc.html(laporanTable, {
+                callback: function (doc) {
+                    doc.save("laporan_penjualan.pdf");
+                },
+                x: 10,
+                y: 40,
+                html2canvas: { scale: 0.6 }
+            });
+        });
+
+        // Function to get room status based on bookings
+        function getRoomStatus(allRooms, orders) {
+            return allRooms.map(room => {
+                const booking = orders.find(order => order.roomNumber === room.roomNumber);
+
+                return {
+                    name: room.name || "Undefined Name",
+                    roomNumber: room.roomNumber || "Undefined Room Number",
+                    status: booking ? "Terisi" : "Kosong",
+                    bookingDate: booking ? booking.bookingDate : "-"
+                };
+            });
+        }
+
+        // Function to populate the room summary table
+        function populateRoomTable() {
+            const allRooms = Object.values(JSON.parse(localStorage.getItem("roomData"))).flat();
+            const orders = JSON.parse(localStorage.getItem("roomOrders")) || [];
+            const roomStatus = getRoomStatus(allRooms, orders);
+            const roomSummaryTable = document.getElementById("roomSummaryTable");
+
+            roomSummaryTable.innerHTML = ""; // Clear previous content
+
+            roomStatus.forEach(room => {
+                const row = `
+                    <tr>
+                        <td>${room.name}</td>
+                        <td>${room.roomNumber}</td>
+                        <td>${room.status}</td>
+                    </tr>
+                `;
+                roomSummaryTable.innerHTML += row;
+            });
+        }
+
+        // Calling the function to populate the room summary table
+        populateRoomTable();
+
+        // Function to calculate summaries
+        function calculateSummaries() {
+            const orders = JSON.parse(localStorage.getItem("roomOrders")) || [];
+            const rooms = Object.values(roomData).flat();
+            const availableRooms = rooms.filter(room => !orders.some(order => order.roomNumber === room.roomNumber));
+
+            const availableRoomCount = availableRooms.length;
+            const bookedRoomCount = rooms.length - availableRoomCount;
+
+            console.log("Total Rooms: ", rooms.length);
+            console.log("Available Rooms: ", availableRoomCount);
+            console.log("Booked Rooms: ", bookedRoomCount);
+        }
+    </script>
+</body>
+
+</html>

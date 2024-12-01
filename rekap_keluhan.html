@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Keluhan - Hotel Davina</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin-top: 80px;
+        }
+
+        .order-image {
+            width: 100px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .order-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .order-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .order-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%; /* Ensure full-width tables */
+        }
+
+        .order-table th,
+        .order-table td {
+            padding: 12px;
+            text-align: center;
+            border: 2px solid #333; /* Thicker borders */
+        }
+
+        .order-table thead {
+            background-color: #f1f1f1; /* Light gray header */
+        }
+
+        .order-table tbody tr {
+            border-bottom: 2px solid #333;
+        }
+
+        .order-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .btn-danger {
+            margin: 5px;
+        }
+
+        .order-details img {
+            width: 100%;
+            max-width: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .main-title {
+            margin-bottom: 20px;
+            border-bottom: 3px solid #333;
+            padding-bottom: 10px;
+        }
+
+        /* Move the delete button to the right */
+        .delete-btn {
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="halaman_karyawan.html">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="laporan_karyawan.html">Laporan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Status_pesanan.html">Konfirmasi Pesanan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="rekap_keluhan.html">Keluhan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manajemen.html">Manajemen</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pt-5">
+        <h2 class="text-center mb-4"><u>Rekap Keluhan Pelanggan</u></h2>
+
+        <!-- Bedroom Complaints Table -->
+        <h3>Keluhan BedRoom</h3>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Keluhan</th>
+                    <th>Status</th>
+                    <th>Room Type & Number</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="bedroomComplaintsTableBody">
+                <!-- Bedroom complaints will be dynamically inserted here -->
+            </tbody>
+        </table>
+
+        <!-- Cafe and Meeting Room Complaints Table -->
+        <h3>Keluhan Cafe dan Meeting Room</h3>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Keluhan</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="cafeMeetingRoomComplaintsTableBody">
+                <!-- Cafe and Meeting Room complaints will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Load complaints from localStorage and display in respective tables
+        window.onload = function() {
+            let complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+
+            // Get table bodies
+            let bedroomTableBody = document.getElementById('bedroomComplaintsTableBody');
+            let cafeMeetingRoomTableBody = document.getElementById('cafeMeetingRoomComplaintsTableBody');
+
+            complaints.forEach((complaint, index) => {
+                let row = document.createElement('tr');
+                let roomDetails = '';
+
+                // Show room type and number only if the complaint is about Bedroom
+                if (complaint.status === 'BedRoom') {
+                    roomDetails = `<b>Tipe Kamar:</b> ${complaint.roomType}, <b>Nomor Kamar:</b> ${complaint.roomNumber}`;
+                }
+
+                row.innerHTML = `
+                    <td>${complaint.tanggal}</td>
+                    <td>${complaint.nama}</td>
+                    <td>${complaint.email}</td>
+                    <td>${complaint.keluhan}</td>
+                    <td>
+                        <select class="form-select" id="status${index}" onchange="updateStatus(${index})">
+                            <option value="Baik" ${complaint.status === 'Baik' ? 'selected' : ''}>Baik</option>
+                            <option value="Di Tangani" ${complaint.status === 'Di Tangani' ? 'selected' : ''}>Di Tangani</option>
+                            <option value="Diterima" ${complaint.status === 'Diterima' ? 'selected' : ''}>Diterima</option>
+                        </select>
+                    </td>
+                    <td>${roomDetails}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteComplaint(${index})">Hapus</button>
+                    </td>
+                `;
+
+                // Append to the correct table based on the complaint type
+                if (complaint.status === 'BedRoom') {
+                    bedroomTableBody.appendChild(row);
+                } else if (complaint.status === 'Cafe' || complaint.status === 'Meeting Room') {
+                    // Only add the "Action" column, no room details for Cafe and Meeting Room
+                    row.innerHTML = `
+                        <td>${complaint.tanggal}</td>
+                        <td>${complaint.nama}</td>
+                        <td>${complaint.email}</td>
+                        <td>${complaint.keluhan}</td>
+                        <td>
+                            <select class="form-select" id="status${index}" onchange="updateStatus(${index})">
+                                <option value="Baik" ${complaint.status === 'Baik' ? 'selected' : ''}>Baik</option>
+                                <option value="Di Tangani" ${complaint.status === 'Di Tangani' ? 'selected' : ''}>Di Tangani</option>
+                                <option value="Diterima" ${complaint.status === 'Diterima' ? 'selected' : ''}>Diterima</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteComplaint(${index})">Hapus</button>
+                        </td>
+                    `;
+                    cafeMeetingRoomTableBody.appendChild(row);
+                }
+            });
+        }
+
+        // Update complaint status
+        function updateStatus(index) {
+            let complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+            let status = document.getElementById(`status${index}`).value;
+            complaints[index].status = status;
+            localStorage.setItem('complaints', JSON.stringify(complaints));
+        }
+
+        // Delete complaint
+        function deleteComplaint(index) {
+            let complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+            complaints.splice(index, 1);  // Remove the complaint at the specified index
+            localStorage.setItem('complaints', JSON.stringify(complaints));
+
+            // Reload the page to update the table
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOTEL DAVINA - Konfirmasi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .navbar {
+            background-color: #690808 !important; /* Dark maroon */
+        }
+        .navbar-brand {
+            color: white !important;
+        }
+        .confirmation-section {
+            margin-top: 50px;
+            text-align: center;
+        }
+        .confirmation-body {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        .icon-circle {
+            width: 100px;
+            height: 100px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto 20px auto;
+        }
+        .btn-back {
+            background-color: #690808; /* Dark yellow */
+            color: white;
+            font-weight: bold;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">Playmen</a>
+            <span class="navbar-text ms-auto text-white">Pelanggan Name</span>
+        </div>
+    </nav>
+
+    <!-- Confirmation Section -->
+    <div class="container confirmation-section">
+        <div class="confirmation-body">
+            <div class="icon-circle">
+                ✓
+            </div>
+            <h4>Laporan Berhasil Dikirim</h4>
+            <button class="btn btn-back px-4 py-2 mt-3" onclick="location.href='halaman_karyawan.html'">Back</button>
+        </div>
+    </div>
+
+
+<script>
+    function loadPendingOrders() {
+    const roomOrders = JSON.parse(localStorage.getItem('roomOrders')) || [];
+    const pendingOrders = roomOrders.filter(order => order.status === 'Pending');
+    const orderContainer = document.getElementById('pendingOrders');
+
+    orderContainer.innerHTML = ''; // Kosongkan kontainer
+
+    pendingOrders.forEach((order, index) => {
+        const orderRow = document.createElement('div');
+        orderRow.innerHTML = `
+            <p>${order.name} (${order.guestName})</p>
+            <button onclick="confirmOrder(${index})">Konfirmasi</button>
+        `;
+        orderContainer.appendChild(orderRow);
+    });
+}
+
+function confirmOrder(index) {
+    let roomOrders = JSON.parse(localStorage.getItem('roomOrders')) || [];
+    roomOrders[index].status = 'Confirmed'; // Perbarui status
+    localStorage.setItem('roomOrders', JSON.stringify(roomOrders));
+    loadPendingOrders(); // Muat ulang
+}
+
+// Panggil fungsi ketika halaman dimuat
+document.addEventListener('DOMContentLoaded', loadPendingOrders);
+
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
